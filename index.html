@@ -22,14 +22,12 @@
 
 html { scroll-behavior: smooth; }
 
-/* GLOBAL: nothing selectable by default */
 * {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
 }
 
-/* Only these can be selected/copied */
 .selectable,
 .selectable * {
   -webkit-user-select: text;
@@ -47,7 +45,7 @@ body {
   overflow-x: hidden;
 }
 
-#particles-canvas {
+#particlesCanvas {
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -60,6 +58,7 @@ body {
   max-width: 700px;
   margin: 0 auto;
   padding: 0 12px 60px;
+  perspective: 1000px;
 }
 
 .top-stripe {
@@ -75,11 +74,14 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  cursor: pointer;
 }
+
 .marquee-text {
   display: inline-block;
   animation: mscroll 22s linear infinite;
 }
+
 @keyframes mscroll {
   0%   { transform: translateX(100vw); }
   100% { transform: translateX(-100%); }
@@ -90,9 +92,11 @@ body {
   backdrop-filter: blur(3px);
   border: 1.5px solid rgba(28,90,138,0.18);
   border-top: 3px solid var(--accent);
-  box-shadow: 0 6px 36px rgba(28,90,138,0.13), 0 1px 4px rgba(28,90,138,0.07);
+  box-shadow: 0 15px 35px rgba(28,90,138,0.2), 0 5px 15px rgba(28,90,138,0.1);
   overflow: hidden;
   margin-top: 26px;
+  transition: transform 0.1s ease-out;
+  transform-style: preserve-3d;
 }
 
 .header-block {
@@ -100,6 +104,7 @@ body {
   grid-template-columns: 1fr 1fr;
   border-bottom: 2px solid var(--accent);
 }
+
 .header-left {
   background: var(--accent);
   padding: 14px 18px;
@@ -108,6 +113,7 @@ body {
   justify-content: center;
   gap: 4px;
 }
+
 .site-title {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 2.3rem;
@@ -115,11 +121,13 @@ body {
   line-height: 1;
   letter-spacing: 0.04em;
 }
+
 .site-sub {
   font-size: 1.1rem;
   color: rgba(185,220,250,0.85);
   letter-spacing: 0.07em;
 }
+
 .header-right {
   background: var(--panel);
   border-left: 2px solid var(--accent);
@@ -129,17 +137,20 @@ body {
   justify-content: center;
   gap: 5px;
 }
+
 .header-right .htitle {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.1rem;
   color: var(--accent);
   letter-spacing: 0.08em;
 }
+
 .header-right p {
   font-size: 1.1rem;
   color: var(--text);
   line-height: 1.6;
 }
+
 .header-right strong { color: var(--accent); }
 
 .profile-row {
@@ -150,12 +161,19 @@ body {
   align-items: center;
   gap: 18px;
 }
+
 .pfp-wrap {
   position: relative;
   width: 86px;
   height: 86px;
   flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
+
+.pfp-wrap:hover {
+  transform: scale(1.05) rotate(-3deg);
+}
+
 .pfp-wrap img {
   width: 100%;
   height: 100%;
@@ -167,6 +185,7 @@ body {
   pointer-events: none;
   -webkit-user-drag: none;
 }
+
 .pfp-ring {
   position: absolute;
   inset: -2px;
@@ -174,6 +193,7 @@ body {
   border: 2px solid rgba(28,90,138,0.45);
   pointer-events: none;
 }
+
 .pname {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 2.4rem;
@@ -181,9 +201,11 @@ body {
   line-height: 1;
   text-shadow: 2px 2px 0 rgba(28,90,138,0.18), 3px 3px 0 rgba(28,90,138,0.1);
 }
+
 .pmeta { font-size: 1.12rem; color: var(--textdim); margin-top: 3px; line-height: 1.45; }
 .pmeta span { color: var(--accent); }
 .badge-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+
 .badge {
   font-size: 0.95rem;
   padding: 1px 9px;
@@ -192,6 +214,13 @@ body {
   color: var(--accent2);
   background: rgba(40,120,181,0.07);
   letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+
+.badge:hover {
+  background: var(--accent);
+  color: var(--white);
+  transform: translateY(-2px);
 }
 
 .divline { height: 2px; background: linear-gradient(90deg, var(--accent), rgba(28,90,138,0.08)); }
@@ -201,6 +230,7 @@ body {
   grid-template-columns: 1fr 1fr;
   border-bottom: 2px solid var(--border);
 }
+
 .col-l { background: var(--panel);  padding: 18px 18px 22px; }
 .col-r { background: var(--panel2); padding: 18px 18px 22px; border-left: 2px solid var(--border); }
 
@@ -217,7 +247,8 @@ body {
 }
 
 .rtxt { font-size: 1.14rem; color: var(--text); line-height: 1.72; }
-.rtxt p { margin-bottom: 1px; }
+.rtxt p { margin-bottom: 1px; transition: transform 0.2s ease; }
+.rtxt p:hover { transform: translateX(5px); color: var(--accent); }
 .rtxt strong { color: var(--accent); }
 
 .warn-box {
@@ -229,6 +260,7 @@ body {
   line-height: 1.6;
   margin-top: 10px;
 }
+
 .warn-box strong { color: var(--accent); }
 
 .robux-banner {
@@ -240,6 +272,11 @@ body {
   text-align: center;
   padding: 10px 12px;
   border-top: 1px solid rgba(255,255,255,0.12);
+  transition: letter-spacing 0.3s ease;
+}
+
+.robux-banner:hover {
+  letter-spacing: 0.18em;
 }
 
 .pay-grid {
@@ -247,6 +284,7 @@ body {
   grid-template-columns: 1fr 1fr;
   border-bottom: 2px solid var(--border);
 }
+
 .pay-l { background: var(--panel);  padding: 18px 18px 22px; }
 .pay-r { background: var(--panel2); padding: 18px 18px 22px; border-left: 2px solid var(--border); }
 
@@ -262,6 +300,7 @@ body {
 }
 
 .pricelist { font-size: 1.13rem; color: var(--text); line-height: 1.7; }
+
 .pricelist .cat {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1rem;
@@ -272,9 +311,23 @@ body {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.prow { display: flex; justify-content: space-between; gap: 8px; padding: 1px 0; }
+
+.prow { 
+  display: flex; 
+  justify-content: space-between; 
+  gap: 8px; 
+  padding: 4px 8px; 
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.prow:hover {
+  background: rgba(28,90,138,0.08);
+  transform: scale(1.02);
+}
+
 .prow .pn { color: var(--text); }
-.prow .pa { color: var(--accent); white-space: nowrap; }
+.prow .pa { color: var(--accent); white-space: nowrap; font-weight: bold; }
 
 .bnote {
   background: rgba(28,90,138,0.06);
@@ -286,6 +339,7 @@ body {
   line-height: 1.6;
   margin-top: 12px;
 }
+
 .bnote strong { color: var(--accent); }
 
 .full-panel {
@@ -307,6 +361,7 @@ body {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
 .fade { animation: fadeUp 0.5s ease forwards; opacity: 0; }
 .d1 { animation-delay: 0.04s; }
 .d2 { animation-delay: 0.1s; }
@@ -319,25 +374,23 @@ body {
   .header-block, .two-col, .pay-grid { grid-template-columns: 1fr; }
   .col-r, .pay-r { border-left: none; border-top: 2px solid var(--border); }
   .header-right { border-left: none; border-top: 2px solid rgba(255,255,255,0.2); }
+  .outer { transform: none !important; }
 }
 </style>
 </head>
 <body>
 
-<canvas id="particles-canvas"></canvas>
+<canvas id="particlesCanvas"></canvas>
 
 <div class="page">
-
   <div class="top-stripe fade d1">
-    <span class="marquee-text">
-      BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦
+    <span class="marquee-text" id="marqueeText">
+      CLICK ANYWHERE TO START MUSIC ✦ BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      CLICK ANYWHERE TO START MUSIC ✦ BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦
     </span>
   </div>
 
-  <div class="outer">
-
-    <!-- HEADER -->
+  <div class="outer" id="mainCard">
     <div class="header-block fade d2">
       <div class="header-left">
         <div class="site-title">BARBECUE</div>
@@ -354,14 +407,12 @@ body {
       </div>
     </div>
 
-    <!-- PROFILE -->
     <div class="profile-row fade d2">
       <div class="pfp-wrap">
         <div class="pfp-ring"></div>
         <img src="pic.png" alt="barbecue">
       </div>
       <div>
-        <!-- username selectable so people can search/find on roblox -->
         <div class="pname selectable">BARBECUE_</div>
         <div class="pmeta"><span>13</span> · roblox scripter &amp; sfx dev · <span>4-5 yrs exp</span></div>
         <div class="badge-row">
@@ -375,7 +426,6 @@ body {
 
     <div class="divline fade d3"></div>
 
-    <!-- RULES + DEADLINES -->
     <div class="two-col fade d3">
       <div class="col-l">
         <div class="sec-title">RULES &amp; Guidelines</div>
@@ -408,19 +458,16 @@ body {
       </div>
     </div>
 
-    <!-- ROBUX BANNER -->
     <div class="robux-banner fade d4">
       ⬛ ROBUX PAYMENTS ONLY · PAY BEFORE WORK BEGINS ⬛
     </div>
 
-    <!-- PRICING -->
     <div class="pay-grid fade d4">
       <div class="pay-l">
         <div class="sec-title">SCRIPTING</div>
         <div class="notice-pill">COMBAT &amp; MOVES</div>
         <div class="pricelist">
           <div class="cat">MAIN:</div>
-          <!-- prices selectable so people can reference/quote them -->
           <div class="prow">
             <span class="pn">Basic Combat (M1s)</span>
             <span class="pa selectable">R$1,200</span>
@@ -466,7 +513,6 @@ body {
       </div>
     </div>
 
-    <!-- EXTRA NOTES -->
     <div class="full-panel fade d5">
       <div class="sec-title" style="font-size:1.15rem;">ADDITIONAL NOTES</div>
       <div class="rtxt" style="font-size:1.1rem;">
@@ -479,71 +525,147 @@ body {
     <div class="footer-stripe fade d6">
       BARBECUE_ &nbsp;✦&nbsp; ROBUX ONLY &nbsp;✦&nbsp; 4-5 YRS EXP &nbsp;✦&nbsp; SCRIPTING + SFX
     </div>
-
   </div>
 </div>
 
 <script>
 (function () {
-  const canvas = document.getElementById('particles-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, particles;
+  const canvasElement = document.getElementById('particlesCanvas');
+  const canvasCtx = canvasElement.getContext('2d');
+  const mainCardElement = document.getElementById('mainCard');
+  const marqueeElement = document.getElementById('marqueeText');
+  
+  let canvasWidth, canvasHeight, particleArray;
+  let mousePositionX = -1000;
+  let mousePositionY = -1000;
+  let hasAudioStarted = false;
 
-  const N = 75, SPEED = 0.32, DIST = 125;
+  const totalParticles = 85;
+  const baseMovementSpeed = 0.32;
+  const connectionDistance = 125;
+  const mouseInteractionRadius = 180;
 
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+  const backgroundAudio = new Audio("bgmusic.mp3");
+  backgroundAudio.loop = true;
+
+  function updateCanvasDimensions() {
+    canvasWidth = canvasElement.width = window.innerWidth;
+    canvasHeight = canvasElement.height = window.innerHeight;
   }
 
-  function mkP() {
+  function createNewParticle() {
     return {
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * SPEED * 2,
-      vy: (Math.random() - 0.5) * SPEED * 2,
+      xPosition: Math.random() * canvasWidth,
+      yPosition: Math.random() * canvasHeight,
+      xVelocity: (Math.random() - 0.5) * baseMovementSpeed * 2,
+      yVelocity: (Math.random() - 0.5) * baseMovementSpeed * 2,
+      baseRadius: 2
     };
   }
 
-  function init() {
-    resize();
-    particles = Array.from({ length: N }, mkP);
+  function initializeSystem() {
+    updateCanvasDimensions();
+    particleArray = Array.from({ length: totalParticles }, createNewParticle);
   }
 
-  function loop() {
-    ctx.clearRect(0, 0, W, H);
-    for (let i = 0; i < N; i++) {
-      const p = particles[i];
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
-      p.x += p.vx;
-      p.y += p.vy;
+  function renderLoop() {
+    canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+    
+    for (let index = 0; index < totalParticles; index++) {
+      const currentParticle = particleArray[index];
+      
+      if (currentParticle.xPosition < 0 || currentParticle.xPosition > canvasWidth) currentParticle.xVelocity *= -1;
+      if (currentParticle.yPosition < 0 || currentParticle.yPosition > canvasHeight) currentParticle.yVelocity *= -1;
+      
+      currentParticle.xPosition += currentParticle.xVelocity;
+      currentParticle.yPosition += currentParticle.yVelocity;
 
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(28,90,138,0.45)';
-      ctx.fill();
+      const deltaXMouse = currentParticle.xPosition - mousePositionX;
+      const deltaYMouse = currentParticle.yPosition - mousePositionY;
+      const distanceFromMouse = Math.sqrt(deltaXMouse * deltaXMouse + deltaYMouse * deltaYMouse);
 
-      for (let j = i + 1; j < N; j++) {
-        const q = particles[j];
-        const dx = p.x - q.x, dy = p.y - q.y;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        if (d < DIST) {
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(q.x, q.y);
-          ctx.strokeStyle = `rgba(28,90,138,${(1 - d / DIST) * 0.22})`;
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
+      if (distanceFromMouse < mouseInteractionRadius) {
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(currentParticle.xPosition, currentParticle.yPosition);
+        canvasCtx.lineTo(mousePositionX, mousePositionY);
+        canvasCtx.strokeStyle = `rgba(28,90,138,${(1 - distanceFromMouse / mouseInteractionRadius) * 0.4})`;
+        canvasCtx.lineWidth = 1;
+        canvasCtx.stroke();
+
+        const repelForce = (mouseInteractionRadius - distanceFromMouse) / mouseInteractionRadius;
+        currentParticle.xPosition += (deltaXMouse / distanceFromMouse) * repelForce * 1.5;
+        currentParticle.yPosition += (deltaYMouse / distanceFromMouse) * repelForce * 1.5;
+      }
+
+      canvasCtx.beginPath();
+      canvasCtx.arc(currentParticle.xPosition, currentParticle.yPosition, currentParticle.baseRadius, 0, Math.PI * 2);
+      canvasCtx.fillStyle = 'rgba(28,90,138,0.55)';
+      canvasCtx.fill();
+
+      for (let secondaryIndex = index + 1; secondaryIndex < totalParticles; secondaryIndex++) {
+        const secondaryParticle = particleArray[secondaryIndex];
+        const deltaXParticle = currentParticle.xPosition - secondaryParticle.xPosition;
+        const deltaYParticle = currentParticle.yPosition - secondaryParticle.yPosition;
+        const distanceBetweenParticles = Math.sqrt(deltaXParticle * deltaXParticle + deltaYParticle * deltaYParticle);
+        
+        if (distanceBetweenParticles < connectionDistance) {
+          canvasCtx.beginPath();
+          canvasCtx.moveTo(currentParticle.xPosition, currentParticle.yPosition);
+          canvasCtx.lineTo(secondaryParticle.xPosition, secondaryParticle.yPosition);
+          canvasCtx.strokeStyle = `rgba(28,90,138,${(1 - distanceBetweenParticles / connectionDistance) * 0.25})`;
+          canvasCtx.lineWidth = 0.8;
+          canvasCtx.stroke();
         }
       }
     }
-    requestAnimationFrame(loop);
+    requestAnimationFrame(renderLoop);
   }
 
-  window.addEventListener('resize', resize);
-  init();
-  loop();
+  function handleFirstInteraction() {
+    if (!hasAudioStarted) {
+      backgroundAudio.currentTime = 8;
+      backgroundAudio.play().catch(() => {});
+      hasAudioStarted = true;
+      marqueeElement.innerHTML = marqueeElement.innerHTML.replace(/CLICK ANYWHERE TO START MUSIC ✦ /g, '');
+      document.removeEventListener('click', handleFirstInteraction);
+    }
+  }
+
+  window.addEventListener('resize', updateCanvasDimensions);
+  
+  window.addEventListener('mousemove', (event) => {
+    mousePositionX = event.clientX;
+    mousePositionY = event.clientY;
+
+    if (window.innerWidth > 520) {
+      const rotationX = (window.innerHeight / 2 - event.clientY) / 80;
+      const rotationY = (window.innerWidth / 2 - event.clientX) / -80;
+      mainCardElement.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+    }
+  });
+
+  window.addEventListener('mouseout', () => {
+    mousePositionX = -1000;
+    mousePositionY = -1000;
+    mainCardElement.style.transform = `rotateX(0deg) rotateY(0deg)`;
+  });
+
+  window.addEventListener('blur', () => {
+    if (hasAudioStarted) {
+      backgroundAudio.volume = 0.15;
+    }
+  });
+
+  window.addEventListener('focus', () => {
+    if (hasAudioStarted) {
+      backgroundAudio.volume = 1.0;
+    }
+  });
+
+  document.addEventListener('click', handleFirstInteraction);
+
+  initializeSystem();
+  renderLoop();
 })();
 </script>
 </body>
