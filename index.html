@@ -547,6 +547,8 @@ body {
 
   const backgroundAudio = new Audio("bgmusic.mp3");
   backgroundAudio.loop = true;
+  backgroundAudio.preload = "auto";
+  backgroundAudio.load();
 
   function updateCanvasDimensions() {
     canvasWidth = canvasElement.width = window.innerWidth;
@@ -638,8 +640,8 @@ body {
     mousePositionY = event.clientY;
 
     if (window.innerWidth > 520) {
-      const rotationX = (window.innerHeight / 2 - event.clientY) / 80;
-      const rotationY = (window.innerWidth / 2 - event.clientX) / -80;
+      const rotationX = (window.innerHeight / 2 - event.clientY) / 180;
+      const rotationY = (window.innerWidth / 2 - event.clientX) / -180;
       mainCardElement.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
     }
   });
