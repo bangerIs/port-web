@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>barbecue - commissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=VT323&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent:  #1c5a8a;
+  --accent2: #2878b5;
+  --panel:   rgba(222,240,255,0.84);
+  --panel2:  rgba(205,230,252,0.78);
+  --border:  rgba(28,90,138,0.2);
+  --text:    #0d2d45;
+  --textdim: #3a6a8a;
+  --white:   #f0f8ff;
+}
+
+html { scroll-behavior: smooth; }
+
+/* GLOBAL: nothing selectable by default */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+/* Only these can be selected/copied */
+.selectable,
+.selectable * {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+body {
+  background: linear-gradient(160deg, #a8d0ed 0%, #c3e0f7 35%, #d8edfb 65%, #b5d4ee 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: 'VT323', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#particles-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 12px 60px;
+}
+
+.top-stripe {
+  background: var(--accent);
+  color: rgba(210,235,255,0.9);
+  font-family: 'VT323', monospace;
+  font-size: 1.05rem;
+  letter-spacing: 0.14em;
+  padding: 5px 0;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.marquee-text {
+  display: inline-block;
+  animation: mscroll 22s linear infinite;
+}
+@keyframes mscroll {
+  0%   { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
+}
+
+.outer {
+  background: rgba(214,236,252,0.5);
+  backdrop-filter: blur(3px);
+  border: 1.5px solid rgba(28,90,138,0.18);
+  border-top: 3px solid var(--accent);
+  box-shadow: 0 6px 36px rgba(28,90,138,0.13), 0 1px 4px rgba(28,90,138,0.07);
+  overflow: hidden;
+  margin-top: 26px;
+}
+
+.header-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 2px solid var(--accent);
+}
+.header-left {
+  background: var(--accent);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.site-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.3rem;
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+.site-sub {
+  font-size: 1.1rem;
+  color: rgba(185,220,250,0.85);
+  letter-spacing: 0.07em;
+}
+.header-right {
+  background: var(--panel);
+  border-left: 2px solid var(--accent);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+.header-right .htitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+.header-right p {
+  font-size: 1.1rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.header-right strong { color: var(--accent); }
+
+.profile-row {
+  background: var(--panel2);
+  border-bottom: 2px solid var(--border);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.pfp-wrap {
+  position: relative;
+  width: 86px;
+  height: 86px;
+  flex-shrink: 0;
+}
+.pfp-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  mask-image: radial-gradient(ellipse 88% 88% at 50% 50%, black 35%, rgba(0,0,0,0.55) 58%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 88% 88% at 50% 50%, black 35%, rgba(0,0,0,0.55) 58%, transparent 100%);
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.pfp-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  border: 2px solid rgba(28,90,138,0.45);
+  pointer-events: none;
+}
+.pname {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  color: var(--accent);
+  line-height: 1;
+  text-shadow: 2px 2px 0 rgba(28,90,138,0.18), 3px 3px 0 rgba(28,90,138,0.1);
+}
+.pmeta { font-size: 1.12rem; color: var(--textdim); margin-top: 3px; line-height: 1.45; }
+.pmeta span { color: var(--accent); }
+.badge-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.badge {
+  font-size: 0.95rem;
+  padding: 1px 9px;
+  border: 1.5px solid rgba(28,90,138,0.35);
+  border-radius: 3px;
+  color: var(--accent2);
+  background: rgba(40,120,181,0.07);
+  letter-spacing: 0.05em;
+}
+
+.divline { height: 2px; background: linear-gradient(90deg, var(--accent), rgba(28,90,138,0.08)); }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 2px solid var(--border);
+}
+.col-l { background: var(--panel);  padding: 18px 18px 22px; }
+.col-r { background: var(--panel2); padding: 18px 18px 22px; border-left: 2px solid var(--border); }
+
+.sec-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  border-bottom: 1.5px solid var(--border);
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.rtxt { font-size: 1.14rem; color: var(--text); line-height: 1.72; }
+.rtxt p { margin-bottom: 1px; }
+.rtxt strong { color: var(--accent); }
+
+.warn-box {
+  background: rgba(28,90,138,0.07);
+  border-left: 3px solid var(--accent);
+  padding: 9px 13px;
+  font-size: 1.08rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-top: 10px;
+}
+.warn-box strong { color: var(--accent); }
+
+.robux-banner {
+  background: var(--accent);
+  color: var(--white);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+  text-align: center;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+.pay-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 2px solid var(--border);
+}
+.pay-l { background: var(--panel);  padding: 18px 18px 22px; }
+.pay-r { background: var(--panel2); padding: 18px 18px 22px; border-left: 2px solid var(--border); }
+
+.notice-pill {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--white);
+  font-size: 0.95rem;
+  padding: 2px 12px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  letter-spacing: 0.06em;
+}
+
+.pricelist { font-size: 1.13rem; color: var(--text); line-height: 1.7; }
+.pricelist .cat {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  color: var(--accent2);
+  letter-spacing: 0.07em;
+  margin-top: 7px;
+  margin-bottom: 1px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prow { display: flex; justify-content: space-between; gap: 8px; padding: 1px 0; }
+.prow .pn { color: var(--text); }
+.prow .pa { color: var(--accent); white-space: nowrap; }
+
+.bnote {
+  background: rgba(28,90,138,0.06);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 10px 14px;
+  font-size: 1.05rem;
+  color: var(--textdim);
+  line-height: 1.6;
+  margin-top: 12px;
+}
+.bnote strong { color: var(--accent); }
+
+.full-panel {
+  background: var(--panel);
+  padding: 16px 20px 18px;
+  border-bottom: 2px solid var(--border);
+}
+
+.footer-stripe {
+  background: var(--accent);
+  color: rgba(185,220,250,0.75);
+  font-size: 0.98rem;
+  letter-spacing: 0.14em;
+  text-align: center;
+  padding: 7px 0;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+.d1 { animation-delay: 0.04s; }
+.d2 { animation-delay: 0.1s; }
+.d3 { animation-delay: 0.18s; }
+.d4 { animation-delay: 0.26s; }
+.d5 { animation-delay: 0.34s; }
+.d6 { animation-delay: 0.42s; }
+
+@media (max-width: 520px) {
+  .header-block, .two-col, .pay-grid { grid-template-columns: 1fr; }
+  .col-r, .pay-r { border-left: none; border-top: 2px solid var(--border); }
+  .header-right { border-left: none; border-top: 2px solid rgba(255,255,255,0.2); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<div class="page">
+
+  <div class="top-stripe fade d1">
+    <span class="marquee-text">
+      BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦
+    </span>
+  </div>
+
+  <div class="outer">
+
+    <!-- HEADER -->
+    <div class="header-block fade d2">
+      <div class="header-left">
+        <div class="site-title">BARBECUE</div>
+        <div class="site-sub">// ROBLOX DEV COMMISSIONS</div>
+        <div class="site-sub" style="font-size:0.95rem;opacity:0.65;margin-top:3px;">COMMS OPEN · DM TO ORDER</div>
+      </div>
+      <div class="header-right">
+        <div class="htitle">ABOUT ME</div>
+        <p>
+          hey, i'm <strong>barbecue</strong>, <strong>13 yrs old</strong> with
+          <strong>4-5 years</strong> of roblox dev experience. i specialize in
+          combat scripting, move scripting, and sfx work. i keep things clean, honest, and on time.
+        </p>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="profile-row fade d2">
+      <div class="pfp-wrap">
+        <div class="pfp-ring"></div>
+        <img src="pic.png" alt="barbecue">
+      </div>
+      <div>
+        <!-- username selectable so people can search/find on roblox -->
+        <div class="pname selectable">BARBECUE_</div>
+        <div class="pmeta"><span>13</span> · roblox scripter &amp; sfx dev · <span>4-5 yrs exp</span></div>
+        <div class="badge-row">
+          <span class="badge">SCRIPTING</span>
+          <span class="badge">SFX</span>
+          <span class="badge">R$ ONLY</span>
+          <span class="badge">OPEN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divline fade d3"></div>
+
+    <!-- RULES + DEADLINES -->
+    <div class="two-col fade d3">
+      <div class="col-l">
+        <div class="sec-title">RULES &amp; Guidelines</div>
+        <div class="rtxt">
+          <p>+ Pay in advance, always.</p>
+          <p>+ <strong>Robux only.</strong> No exceptions.</p>
+          <p>+ I do <strong>NOT</strong> make full frameworks, ever.</p>
+          <p>+ I will not sell old frameworks either.</p>
+          <p>+ Be clear about your request upfront.</p>
+          <p>+ Contact me via DM, not email.</p>
+          <p>+ Revisions discussed per commission.</p>
+          <p>+ Don't rush. Good work takes time.</p>
+          <p>+ Rules will update as I expand.</p>
+        </div>
+        <div class="warn-box">
+          <strong>Note:</strong> I do not build full game frameworks and will never sell old ones. Don't ask.
+        </div>
+      </div>
+      <div class="col-r">
+        <div class="sec-title">DEADLINES</div>
+        <div class="rtxt">
+          <p>Commissions take <strong>1-3 days minimum</strong> depending on scope.</p>
+          <br>
+          <p>I'll give an honest estimate before we start. If you have concerns about timing, just say so and we can discuss.</p>
+          <br>
+          <p>If a deadline isn't met on my end, <strong>you're allowed to get your money back.</strong></p>
+          <br>
+          <p>I may ask for extensions sometimes due to school. I'll always <strong>communicate this upfront.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROBUX BANNER -->
+    <div class="robux-banner fade d4">
+      ⬛ ROBUX PAYMENTS ONLY · PAY BEFORE WORK BEGINS ⬛
+    </div>
+
+    <!-- PRICING -->
+    <div class="pay-grid fade d4">
+      <div class="pay-l">
+        <div class="sec-title">SCRIPTING</div>
+        <div class="notice-pill">COMBAT &amp; MOVES</div>
+        <div class="pricelist">
+          <div class="cat">MAIN:</div>
+          <!-- prices selectable so people can reference/quote them -->
+          <div class="prow">
+            <span class="pn">Basic Combat (M1s)</span>
+            <span class="pa selectable">R$1,200</span>
+          </div>
+          <div class="prow">
+            <span class="pn">Moves (Simple)</span>
+            <span class="pa selectable">R$1,400</span>
+          </div>
+          <div class="prow">
+            <span class="pn">Cutscene / Large Move</span>
+            <span class="pa selectable">R$4,500</span>
+          </div>
+          <div class="cat">NOTES:</div>
+          <div style="font-size:1rem;color:var(--textdim);line-height:1.55;">
+            User-attached &amp; large cinematic moves fall under the R$4,500 tier.
+          </div>
+        </div>
+        <div class="bnote">
+          <strong>No full frameworks.</strong> I work on specific systems only, not entire codebases, ever.
+        </div>
+      </div>
+      <div class="pay-r">
+        <div class="sec-title">SFX</div>
+        <div class="notice-pill">SOUND DESIGN</div>
+        <div class="pricelist">
+          <div class="cat">MAIN:</div>
+          <div class="prow">
+            <span class="pn">M1 SFX</span>
+            <span class="pa selectable">R$1,200</span>
+          </div>
+          <div class="prow">
+            <span class="pn">Move SFX</span>
+            <span class="pa selectable">R$1,400</span>
+          </div>
+          <div class="prow">
+            <span class="pn">Large / Complex Move SFX</span>
+            <span class="pa selectable">R$2,000</span>
+          </div>
+        </div>
+        <div class="bnote">
+          <strong>Heads up:</strong> if I can't pull off the sfx for your move, I'll tell you straight up and won't take the job. Honesty over bad work.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXTRA NOTES -->
+    <div class="full-panel fade d5">
+      <div class="sec-title" style="font-size:1.15rem;">ADDITIONAL NOTES</div>
+      <div class="rtxt" style="font-size:1.1rem;">
+        <p>* As of now, <strong>Robux is the only accepted payment method.</strong> If you have a suggestion for future methods, let me know!</p>
+        <p style="margin-top:5px;">* All prices are final and listed in Robux. No hidden fees. What you see is what you pay.</p>
+        <p style="margin-top:5px;">* DM me wherever you found this page to start a commission.</p>
+      </div>
+    </div>
+
+    <div class="footer-stripe fade d6">
+      BARBECUE_ &nbsp;✦&nbsp; ROBUX ONLY &nbsp;✦&nbsp; 4-5 YRS EXP &nbsp;✦&nbsp; SCRIPTING + SFX
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles;
+
+  const N = 75, SPEED = 0.32, DIST = 125;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function mkP() {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * SPEED * 2,
+      vy: (Math.random() - 0.5) * SPEED * 2,
+    };
+  }
+
+  function init() {
+    resize();
+    particles = Array.from({ length: N }, mkP);
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < N; i++) {
+      const p = particles[i];
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+      p.x += p.vx;
+      p.y += p.vy;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(28,90,138,0.45)';
+      ctx.fill();
+
+      for (let j = i + 1; j < N; j++) {
+        const q = particles[j];
+        const dx = p.x - q.x, dy = p.y - q.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < DIST) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = `rgba(28,90,138,${(1 - d / DIST) * 0.22})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', resize);
+  init();
+  loop();
+})();
+</script>
+</body>
+</html>
