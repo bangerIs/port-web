@@ -95,8 +95,8 @@ body {
   box-shadow: 0 15px 35px rgba(28,90,138,0.2), 0 5px 15px rgba(28,90,138,0.1);
   overflow: hidden;
   margin-top: 26px;
-  transition: transform 0.1s ease-out;
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .header-block {
@@ -394,7 +394,7 @@ body {
     <div class="header-block fade d2">
       <div class="header-left">
         <div class="site-title">BARBECUE</div>
-        <div class="site-sub">// ROBLOX DEV COMMISSIONS</div>
+        <div class="site-sub">// ROBLOX DEV COMMS</div>
         <div class="site-sub" style="font-size:0.95rem;opacity:0.65;margin-top:3px;">COMMS OPEN · DM TO ORDER</div>
       </div>
       <div class="header-right">
@@ -543,7 +543,14 @@ body {
   const totalParticles = 85;
   const baseMovementSpeed = 0.32;
   const connectionDistance = 125;
+  const connectionDistanceSq = connectionDistance * connectionDistance;
   const mouseInteractionRadius = 180;
+  const mouseInteractionRadiusSq = mouseInteractionRadius * mouseInteractionRadius;
+
+  let targetRotationX = 0;
+  let targetRotationY = 0;
+  let currentRotationX = 0;
+  let currentRotationY = 0;
 
   const backgroundAudio = new Audio("bgmusic.mp3");
   backgroundAudio.loop = true;
@@ -572,6 +579,13 @@ body {
 
   function renderLoop() {
     canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    currentRotationX += (targetRotationX - currentRotationX) * 0.1;
+    currentRotationY += (targetRotationY - currentRotationY) * 0.1;
+
+    if (window.innerWidth > 520) {
+      mainCardElement.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
+    }
     
     for (let index = 0; index < totalParticles; index++) {
       const currentParticle = particleArray[index];
@@ -584,9 +598,10 @@ body {
 
       const deltaXMouse = currentParticle.xPosition - mousePositionX;
       const deltaYMouse = currentParticle.yPosition - mousePositionY;
-      const distanceFromMouse = Math.sqrt(deltaXMouse * deltaXMouse + deltaYMouse * deltaYMouse);
+      const distSqMouse = deltaXMouse * deltaXMouse + deltaYMouse * deltaYMouse;
 
-      if (distanceFromMouse < mouseInteractionRadius) {
+      if (distSqMouse < mouseInteractionRadiusSq) {
+        const distanceFromMouse = Math.sqrt(distSqMouse);
         canvasCtx.beginPath();
         canvasCtx.moveTo(currentParticle.xPosition, currentParticle.yPosition);
         canvasCtx.lineTo(mousePositionX, mousePositionY);
@@ -608,9 +623,10 @@ body {
         const secondaryParticle = particleArray[secondaryIndex];
         const deltaXParticle = currentParticle.xPosition - secondaryParticle.xPosition;
         const deltaYParticle = currentParticle.yPosition - secondaryParticle.yPosition;
-        const distanceBetweenParticles = Math.sqrt(deltaXParticle * deltaXParticle + deltaYParticle * deltaYParticle);
+        const distSqParticle = deltaXParticle * deltaXParticle + deltaYParticle * deltaYParticle;
         
-        if (distanceBetweenParticles < connectionDistance) {
+        if (distSqParticle < connectionDistanceSq) {
+          const distanceBetweenParticles = Math.sqrt(distSqParticle);
           canvasCtx.beginPath();
           canvasCtx.moveTo(currentParticle.xPosition, currentParticle.yPosition);
           canvasCtx.lineTo(secondaryParticle.xPosition, secondaryParticle.yPosition);
@@ -640,16 +656,16 @@ body {
     mousePositionY = event.clientY;
 
     if (window.innerWidth > 520) {
-      const rotationX = (window.innerHeight / 2 - event.clientY) / 180;
-      const rotationY = (window.innerWidth / 2 - event.clientX) / -180;
-      mainCardElement.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+      targetRotationX = (window.innerHeight / 2 - event.clientY) / 180;
+      targetRotationY = (window.innerWidth / 2 - event.clientX) / -180;
     }
   });
 
   window.addEventListener('mouseout', () => {
     mousePositionX = -1000;
     mousePositionY = -1000;
-    mainCardElement.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    targetRotationX = 0;
+    targetRotationY = 0;
   });
 
   window.addEventListener('blur', () => {
