@@ -470,7 +470,7 @@ body {
 .video-wrap video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;  /* FIX: Changed from 'cover' to 'contain' to prevent cropping */
   display: block;
   pointer-events: none;
 }
