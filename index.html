@@ -74,7 +74,6 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  cursor: pointer;
 }
 
 .marquee-text {
@@ -97,6 +96,44 @@ body {
   margin-top: 26px;
   transform-style: preserve-3d;
   will-change: transform;
+}
+
+.tab-bar {
+  display: flex;
+  background: rgba(20,65,100,0.95);
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.tab-btn {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+  color: rgba(210,235,255,0.5);
+  padding: 9px 22px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: rgba(240,248,255,0.85);
+}
+
+.tab-btn.active {
+  color: var(--white);
+  border-bottom: 3px solid var(--white);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeUp 0.35s ease;
 }
 
 .header-block {
@@ -223,6 +260,33 @@ body {
   transform: translateY(-2px);
 }
 
+.lazy-note {
+  background: rgba(28,90,138,0.06);
+  border-top: 1.5px solid var(--border);
+  border-bottom: 1.5px solid var(--border);
+  padding: 10px 18px;
+  font-size: 1.1rem;
+  color: var(--textdim);
+  font-style: italic;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.lazy-tag {
+  font-family: 'Bebas Neue', sans-serif;
+  font-style: normal;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  background: var(--accent);
+  color: var(--white);
+  padding: 1px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
 .divline { height: 2px; background: linear-gradient(90deg, var(--accent), rgba(28,90,138,0.08)); }
 
 .two-col {
@@ -312,11 +376,11 @@ body {
   text-underline-offset: 2px;
 }
 
-.prow { 
-  display: flex; 
-  justify-content: space-between; 
-  gap: 8px; 
-  padding: 4px 8px; 
+.prow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 8px;
   border-radius: 4px;
   transition: all 0.2s ease;
 }
@@ -357,6 +421,171 @@ body {
   padding: 7px 0;
 }
 
+.work-grid {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 75vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.work-grid::-webkit-scrollbar { width: 6px; }
+.work-grid::-webkit-scrollbar-track { background: rgba(28,90,138,0.05); }
+.work-grid::-webkit-scrollbar-thumb { background: rgba(28,90,138,0.28); border-radius: 3px; }
+.work-grid::-webkit-scrollbar-thumb:hover { background: rgba(28,90,138,0.5); }
+
+.work-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--textdim);
+  font-size: 1.2rem;
+  display: none;
+}
+
+.video-card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.video-card:hover {
+  box-shadow: 0 8px 30px rgba(28,90,138,0.22);
+}
+
+.video-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0a1a2e;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.video-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.video-fade-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, rgba(240,248,255,0.45) 0%, transparent 18%, transparent 82%, rgba(240,248,255,0.45) 100%),
+    linear-gradient(to bottom, rgba(240,248,255,0.45) 0%, transparent 15%, transparent 85%, rgba(240,248,255,0.45) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.video-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: opacity 0.3s ease;
+  background: rgba(28,90,138,0.1);
+}
+
+.video-play-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.play-icon {
+  width: 58px;
+  height: 58px;
+  background: rgba(240,248,255,0.92);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 1.3rem;
+  transition: transform 0.2s ease, background 0.2s ease;
+  padding-left: 4px;
+}
+
+.video-play-overlay:hover .play-icon {
+  transform: scale(1.12);
+  background: rgba(255,255,255,1);
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 22px 12px 10px;
+  background: linear-gradient(transparent, rgba(8,24,50,0.65));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.video-wrap:hover .video-controls {
+  opacity: 1;
+}
+
+.vc-play-btn {
+  background: none;
+  border: none;
+  color: rgba(240,248,255,0.9);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 2px 5px;
+  font-family: 'VT323', monospace;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.vc-progress {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.22);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+
+.vc-bar {
+  height: 100%;
+  width: 0%;
+  background: rgba(240,248,255,0.9);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.vc-time {
+  font-family: 'VT323', monospace;
+  font-size: 0.92rem;
+  color: rgba(240,248,255,0.8);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.video-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  padding: 8px 14px;
+  background: var(--panel2);
+  border-top: 1px solid var(--border);
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -383,307 +612,484 @@ body {
 <canvas id="particlesCanvas"></canvas>
 
 <div class="page">
+
   <div class="top-stripe fade d1">
-    <span class="marquee-text" id="marqueeText">
-      CLICK ANYWHERE TO START MUSIC ✦ BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      CLICK ANYWHERE TO START MUSIC ✦ BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦
+    <span class="marquee-text">
+      BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      BARBECUE COMMS ✦ ROBUX ONLY ✦ SCRIPTING + SFX ✦ 4-5 YRS EXP ✦ OPEN FOR ORDERS ✦
     </span>
   </div>
 
   <div class="outer" id="mainCard">
-    <div class="header-block fade d2">
-      <div class="header-left">
-        <div class="site-title">BARBECUE</div>
-        <div class="site-sub">// ROBLOX DEV COMMS</div>
-        <div class="site-sub" style="font-size:0.95rem;opacity:0.65;margin-top:3px;">COMMS OPEN · DM TO ORDER</div>
-      </div>
-      <div class="header-right">
-        <div class="htitle">ABOUT ME</div>
-        <p>
-          hey, i'm <strong>barbecue</strong>, <strong>13 yrs old</strong> with
-          <strong>4-5 years</strong> of roblox dev experience. i specialize in
-          combat scripting, move scripting, and sfx work. i keep things clean, honest, and on time.
-        </p>
-      </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="comms">COMMISSIONS</button>
+      <button class="tab-btn" data-tab="work">WORK</button>
     </div>
 
-    <div class="profile-row fade d2">
-      <div class="pfp-wrap">
-        <div class="pfp-ring"></div>
-        <img src="pic.png" alt="barbecue">
-      </div>
-      <div>
-        <div class="pname selectable">BARBECUE_</div>
-        <div class="pmeta"><span>13</span> · roblox scripter &amp; sfx dev · <span>4-5 yrs exp</span></div>
-        <div class="badge-row">
-          <span class="badge">SCRIPTING</span>
-          <span class="badge">SFX</span>
-          <span class="badge">R$ ONLY</span>
-          <span class="badge">OPEN</span>
+    <div class="tab-content active" id="tab-comms">
+
+      <div class="header-block fade d2">
+        <div class="header-left">
+          <div class="site-title">BARBECUE</div>
+          <div class="site-sub">// ROBLOX DEV COMMISSIONS</div>
+          <div class="site-sub" style="font-size:0.95rem;opacity:0.65;margin-top:3px;">COMMS OPEN · DM TO ORDER</div>
+        </div>
+        <div class="header-right">
+          <div class="htitle">ABOUT ME</div>
+          <p>
+            hey, i'm <strong>barbecue</strong>, <strong>13 yrs old</strong> with
+            <strong>4-5 years</strong> of roblox dev experience. i specialize in
+            combat scripting, move scripting, and sfx work. i keep things clean, honest, and on time.
+          </p>
         </div>
       </div>
+
+      <div class="profile-row fade d2">
+        <div class="pfp-wrap">
+          <div class="pfp-ring"></div>
+          <img src="pic.png" alt="barbecue">
+        </div>
+        <div>
+          <div class="pname selectable">BARBECUE_</div>
+          <div class="pmeta"><span>13</span> · roblox scripter &amp; sfx dev · <span>4-5 yrs exp</span></div>
+          <div class="badge-row">
+            <span class="badge">SCRIPTING</span>
+            <span class="badge">SFX</span>
+            <span class="badge">R$ ONLY</span>
+            <span class="badge">OPEN</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lazy-note fade d3">
+        <span class="lazy-tag">NOTE</span>
+        dont dm or ping for work. i only work if i have to and/or if i like the project.
+      </div>
+
+      <div class="divline fade d3"></div>
+
+      <div class="two-col fade d3">
+        <div class="col-l">
+          <div class="sec-title">RULES &amp; Guidelines</div>
+          <div class="rtxt">
+            <p>+ Pay in advance, always.</p>
+            <p>+ <strong>Robux only.</strong> No exceptions.</p>
+            <p>+ I do <strong>NOT</strong> make full frameworks, ever.</p>
+            <p>+ I will not sell old frameworks either.</p>
+            <p>+ Be clear about your request upfront.</p>
+            <p>+ Contact me via DM, not email.</p>
+            <p>+ Revisions discussed per commission.</p>
+            <p>+ Don't rush. Good work takes time.</p>
+            <p>+ Rules will update as I expand.</p>
+          </div>
+          <div class="warn-box">
+            <strong>Note:</strong> I do not build full game frameworks and will never sell old ones. Don't ask.
+          </div>
+        </div>
+        <div class="col-r">
+          <div class="sec-title">DEADLINES</div>
+          <div class="rtxt">
+            <p>Commissions take <strong>1-3 days minimum</strong> depending on scope.</p>
+            <br>
+            <p>I'll give an honest estimate before we start. If you have concerns about timing, just say so and we can discuss.</p>
+            <br>
+            <p>If a deadline isn't met on my end, <strong>you're allowed to get your money back.</strong></p>
+            <br>
+            <p>I may ask for extensions sometimes due to school. I'll always <strong>communicate this upfront.</strong></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="robux-banner fade d4">
+        ROBUX PAYMENTS ONLY · PAY BEFORE WORK BEGINS
+      </div>
+
+      <div class="pay-grid fade d4">
+        <div class="pay-l">
+          <div class="sec-title">SCRIPTING</div>
+          <div class="notice-pill">COMBAT &amp; MOVES</div>
+          <div class="pricelist">
+            <div class="cat">MAIN:</div>
+            <div class="prow">
+              <span class="pn">Basic Combat (M1s)</span>
+              <span class="pa selectable">R$1,200</span>
+            </div>
+            <div class="prow">
+              <span class="pn">Moves (Simple)</span>
+              <span class="pa selectable">R$1,400</span>
+            </div>
+            <div class="prow">
+              <span class="pn">Cutscene / Large Move</span>
+              <span class="pa selectable">R$4,500</span>
+            </div>
+            <div class="cat">NOTES:</div>
+            <div style="font-size:1rem;color:var(--textdim);line-height:1.55;">
+              User-attached &amp; large cinematic moves fall under the R$4,500 tier.
+            </div>
+          </div>
+          <div class="bnote">
+            <strong>No full frameworks.</strong> I work on specific systems only, not entire codebases, ever.
+          </div>
+        </div>
+        <div class="pay-r">
+          <div class="sec-title">SFX</div>
+          <div class="notice-pill">SOUND DESIGN</div>
+          <div class="pricelist">
+            <div class="cat">MAIN:</div>
+            <div class="prow">
+              <span class="pn">M1 SFX</span>
+              <span class="pa selectable">R$1,200</span>
+            </div>
+            <div class="prow">
+              <span class="pn">Move SFX</span>
+              <span class="pa selectable">R$1,400</span>
+            </div>
+            <div class="prow">
+              <span class="pn">Large / Complex Move SFX</span>
+              <span class="pa selectable">R$2,000</span>
+            </div>
+          </div>
+          <div class="bnote">
+            <strong>Heads up:</strong> if I can't pull off the sfx for your move, I'll tell you straight up and won't take the job. Honesty over bad work.
+          </div>
+        </div>
+      </div>
+
+      <div class="full-panel fade d5">
+        <div class="sec-title" style="font-size:1.15rem;">ADDITIONAL NOTES</div>
+        <div class="rtxt" style="font-size:1.1rem;">
+          <p>* As of now, <strong>Robux is the only accepted payment method.</strong> If you have a suggestion for future methods, let me know!</p>
+          <p style="margin-top:5px;">* All prices are final and listed in Robux. No hidden fees. What you see is what you pay.</p>
+          <p style="margin-top:5px;">* DM me wherever you found this page to start a commission.</p>
+        </div>
+      </div>
+
+      <div class="footer-stripe fade d6">
+        BARBECUE_ &nbsp;✦&nbsp; ROBUX ONLY &nbsp;✦&nbsp; 4-5 YRS EXP &nbsp;✦&nbsp; SCRIPTING + SFX
+      </div>
+
     </div>
 
-    <div class="divline fade d3"></div>
-
-    <div class="two-col fade d3">
-      <div class="col-l">
-        <div class="sec-title">RULES &amp; Guidelines</div>
-        <div class="rtxt">
-          <p>+ Pay in advance, always.</p>
-          <p>+ <strong>Robux only.</strong> No exceptions.</p>
-          <p>+ I do <strong>NOT</strong> make full frameworks, ever.</p>
-          <p>+ I will not sell old frameworks either.</p>
-          <p>+ Be clear about your request upfront.</p>
-          <p>+ Contact me via DM, not email.</p>
-          <p>+ Revisions discussed per commission.</p>
-          <p>+ Don't rush. Good work takes time.</p>
-          <p>+ Rules will update as I expand.</p>
-        </div>
-        <div class="warn-box">
-          <strong>Note:</strong> I do not build full game frameworks and will never sell old ones. Don't ask.
-        </div>
-      </div>
-      <div class="col-r">
-        <div class="sec-title">DEADLINES</div>
-        <div class="rtxt">
-          <p>Commissions take <strong>1-3 days minimum</strong> depending on scope.</p>
-          <br>
-          <p>I'll give an honest estimate before we start. If you have concerns about timing, just say so and we can discuss.</p>
-          <br>
-          <p>If a deadline isn't met on my end, <strong>you're allowed to get your money back.</strong></p>
-          <br>
-          <p>I may ask for extensions sometimes due to school. I'll always <strong>communicate this upfront.</strong></p>
-        </div>
-      </div>
+    <div class="tab-content" id="tab-work">
+      <div class="work-grid" id="workGrid"></div>
+      <div class="work-empty" id="workEmpty">no videos found yet. check back later!</div>
     </div>
 
-    <div class="robux-banner fade d4">
-       ROBUX PAYMENTS ONLY · PAY BEFORE WORK BEGINS 
-    </div>
-
-    <div class="pay-grid fade d4">
-      <div class="pay-l">
-        <div class="sec-title">SCRIPTING</div>
-        <div class="notice-pill">COMBAT &amp; MOVES</div>
-        <div class="pricelist">
-          <div class="cat">MAIN:</div>
-          <div class="prow">
-            <span class="pn">Basic Combat (M1s)</span>
-            <span class="pa selectable">R$1,200</span>
-          </div>
-          <div class="prow">
-            <span class="pn">Moves (Simple)</span>
-            <span class="pa selectable">R$1,400</span>
-          </div>
-          <div class="prow">
-            <span class="pn">Cutscene / Large Move</span>
-            <span class="pa selectable">R$4,500</span>
-          </div>
-          <div class="cat">NOTES:</div>
-          <div style="font-size:1rem;color:var(--textdim);line-height:1.55;">
-            User-attached &amp; large cinematic moves fall under the R$4,500 tier.
-          </div>
-        </div>
-        <div class="bnote">
-          <strong>No full frameworks.</strong> I work on specific systems only, not entire codebases, ever.
-        </div>
-      </div>
-      <div class="pay-r">
-        <div class="sec-title">SFX</div>
-        <div class="notice-pill">SOUND DESIGN</div>
-        <div class="pricelist">
-          <div class="cat">MAIN:</div>
-          <div class="prow">
-            <span class="pn">M1 SFX</span>
-            <span class="pa selectable">R$1,200</span>
-          </div>
-          <div class="prow">
-            <span class="pn">Move SFX</span>
-            <span class="pa selectable">R$1,400</span>
-          </div>
-          <div class="prow">
-            <span class="pn">Large / Complex Move SFX</span>
-            <span class="pa selectable">R$2,000</span>
-          </div>
-        </div>
-        <div class="bnote">
-          <strong>Heads up:</strong> if I can't pull off the sfx for your move, I'll tell you straight up and won't take the job. Honesty over bad work.
-        </div>
-      </div>
-    </div>
-
-    <div class="full-panel fade d5">
-      <div class="sec-title" style="font-size:1.15rem;">ADDITIONAL NOTES</div>
-      <div class="rtxt" style="font-size:1.1rem;">
-        <p>* As of now, <strong>Robux is the only accepted payment method.</strong> If you have a suggestion for future methods, let me know!</p>
-        <p style="margin-top:5px;">* All prices are final and listed in Robux. No hidden fees. What you see is what you pay.</p>
-        <p style="margin-top:5px;">* DM me wherever you found this page to start a commission.</p>
-      </div>
-    </div>
-
-    <div class="footer-stripe fade d6">
-      BARBECUE_ &nbsp;✦&nbsp; ROBUX ONLY &nbsp;✦&nbsp; 4-5 YRS EXP &nbsp;✦&nbsp; SCRIPTING + SFX
-    </div>
   </div>
 </div>
 
 <script>
 (function () {
-  const canvasElement = document.getElementById('particlesCanvas');
-  const canvasCtx = canvasElement.getContext('2d');
-  const mainCardElement = document.getElementById('mainCard');
-  const marqueeElement = document.getElementById('marqueeText');
-  
-  let canvasWidth, canvasHeight, particleArray;
-  let mousePositionX = -1000;
-  let mousePositionY = -1000;
-  let hasAudioStarted = false;
 
-  const totalParticles = 85;
-  const baseMovementSpeed = 0.32;
-  const connectionDistance = 125;
-  const connectionDistanceSq = connectionDistance * connectionDistance;
-  const mouseInteractionRadius = 180;
-  const mouseInteractionRadiusSq = mouseInteractionRadius * mouseInteractionRadius;
+  const canvas = document.getElementById('particlesCanvas');
+  const ctx = canvas.getContext('2d');
+  const mainCard = document.getElementById('mainCard');
 
-  let targetRotationX = 0;
-  let targetRotationY = 0;
-  let currentRotationX = 0;
-  let currentRotationY = 0;
+  let W, H, particles;
+  let mouseX = -1000;
+  let mouseY = -1000;
 
-  const backgroundAudio = new Audio("bgmusic.mp3");
-  backgroundAudio.loop = true;
-  backgroundAudio.preload = "auto";
-  backgroundAudio.load();
+  const N = 85;
+  const SPEED = 0.32;
+  const CDIST = 125;
+  const CDIST_SQ = CDIST * CDIST;
+  const MDIST = 180;
+  const MDIST_SQ = MDIST * MDIST;
 
-  function updateCanvasDimensions() {
-    canvasWidth = canvasElement.width = window.innerWidth;
-    canvasHeight = canvasElement.height = window.innerHeight;
+  let tRX = 0, tRY = 0, cRX = 0, cRY = 0;
+
+  const bgAudio = new Audio('bgmusic.mp3');
+  bgAudio.loop = true;
+  bgAudio.preload = 'auto';
+  bgAudio.load();
+
+  function tryPlay() {
+    bgAudio.play().catch(() => {});
   }
 
-  function createNewParticle() {
+  tryPlay();
+  document.addEventListener('click', tryPlay, { once: true });
+  document.addEventListener('keydown', tryPlay, { once: true });
+  document.addEventListener('touchend', tryPlay, { once: true });
+
+  window.addEventListener('blur', () => { if (!bgAudio.paused) bgAudio.volume = 0.15; });
+  window.addEventListener('focus', () => { if (!bgAudio.paused) bgAudio.volume = 1.0; });
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function mkP() {
     return {
-      xPosition: Math.random() * canvasWidth,
-      yPosition: Math.random() * canvasHeight,
-      xVelocity: (Math.random() - 0.5) * baseMovementSpeed * 2,
-      yVelocity: (Math.random() - 0.5) * baseMovementSpeed * 2,
-      baseRadius: 2
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * SPEED * 2,
+      vy: (Math.random() - 0.5) * SPEED * 2,
     };
   }
 
-  function initializeSystem() {
-    updateCanvasDimensions();
-    particleArray = Array.from({ length: totalParticles }, createNewParticle);
+  function init() {
+    resize();
+    particles = Array.from({ length: N }, mkP);
   }
 
-  function renderLoop() {
-    canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
 
-    currentRotationX += (targetRotationX - currentRotationX) * 0.1;
-    currentRotationY += (targetRotationY - currentRotationY) * 0.1;
+    cRX += (tRX - cRX) * 0.1;
+    cRY += (tRY - cRY) * 0.1;
 
     if (window.innerWidth > 520) {
-      mainCardElement.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
+      mainCard.style.transform = `rotateX(${cRX}deg) rotateY(${cRY}deg)`;
     }
-    
-    for (let index = 0; index < totalParticles; index++) {
-      const currentParticle = particleArray[index];
-      
-      if (currentParticle.xPosition < 0 || currentParticle.xPosition > canvasWidth) currentParticle.xVelocity *= -1;
-      if (currentParticle.yPosition < 0 || currentParticle.yPosition > canvasHeight) currentParticle.yVelocity *= -1;
-      
-      currentParticle.xPosition += currentParticle.xVelocity;
-      currentParticle.yPosition += currentParticle.yVelocity;
 
-      const deltaXMouse = currentParticle.xPosition - mousePositionX;
-      const deltaYMouse = currentParticle.yPosition - mousePositionY;
-      const distSqMouse = deltaXMouse * deltaXMouse + deltaYMouse * deltaYMouse;
+    for (let i = 0; i < N; i++) {
+      const p = particles[i];
 
-      if (distSqMouse < mouseInteractionRadiusSq) {
-        const distanceFromMouse = Math.sqrt(distSqMouse);
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(currentParticle.xPosition, currentParticle.yPosition);
-        canvasCtx.lineTo(mousePositionX, mousePositionY);
-        canvasCtx.strokeStyle = `rgba(28,90,138,${(1 - distanceFromMouse / mouseInteractionRadius) * 0.4})`;
-        canvasCtx.lineWidth = 1;
-        canvasCtx.stroke();
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+      p.x += p.vx;
+      p.y += p.vy;
 
-        const repelForce = (mouseInteractionRadius - distanceFromMouse) / mouseInteractionRadius;
-        currentParticle.xPosition += (deltaXMouse / distanceFromMouse) * repelForce * 1.5;
-        currentParticle.yPosition += (deltaYMouse / distanceFromMouse) * repelForce * 1.5;
+      const dmx = p.x - mouseX;
+      const dmy = p.y - mouseY;
+      const dmSq = dmx * dmx + dmy * dmy;
+
+      if (dmSq < MDIST_SQ) {
+        const dm = Math.sqrt(dmSq);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(mouseX, mouseY);
+        ctx.strokeStyle = `rgba(28,90,138,${(1 - dm / MDIST) * 0.4})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        const f = (MDIST - dm) / MDIST;
+        p.x += (dmx / dm) * f * 1.5;
+        p.y += (dmy / dm) * f * 1.5;
       }
 
-      canvasCtx.beginPath();
-      canvasCtx.arc(currentParticle.xPosition, currentParticle.yPosition, currentParticle.baseRadius, 0, Math.PI * 2);
-      canvasCtx.fillStyle = 'rgba(28,90,138,0.55)';
-      canvasCtx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(28,90,138,0.55)';
+      ctx.fill();
 
-      for (let secondaryIndex = index + 1; secondaryIndex < totalParticles; secondaryIndex++) {
-        const secondaryParticle = particleArray[secondaryIndex];
-        const deltaXParticle = currentParticle.xPosition - secondaryParticle.xPosition;
-        const deltaYParticle = currentParticle.yPosition - secondaryParticle.yPosition;
-        const distSqParticle = deltaXParticle * deltaXParticle + deltaYParticle * deltaYParticle;
-        
-        if (distSqParticle < connectionDistanceSq) {
-          const distanceBetweenParticles = Math.sqrt(distSqParticle);
-          canvasCtx.beginPath();
-          canvasCtx.moveTo(currentParticle.xPosition, currentParticle.yPosition);
-          canvasCtx.lineTo(secondaryParticle.xPosition, secondaryParticle.yPosition);
-          canvasCtx.strokeStyle = `rgba(28,90,138,${(1 - distanceBetweenParticles / connectionDistance) * 0.25})`;
-          canvasCtx.lineWidth = 0.8;
-          canvasCtx.stroke();
+      for (let j = i + 1; j < N; j++) {
+        const q = particles[j];
+        const dx = p.x - q.x;
+        const dy = p.y - q.y;
+        const dSq = dx * dx + dy * dy;
+        if (dSq < CDIST_SQ) {
+          const d = Math.sqrt(dSq);
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = `rgba(28,90,138,${(1 - d / CDIST) * 0.25})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
         }
       }
     }
-    requestAnimationFrame(renderLoop);
+
+    requestAnimationFrame(loop);
   }
 
-  function handleFirstInteraction() {
-    if (!hasAudioStarted) {
-      backgroundAudio.currentTime = 8;
-      backgroundAudio.play().catch(() => {});
-      hasAudioStarted = true;
-      marqueeElement.innerHTML = marqueeElement.innerHTML.replace(/CLICK ANYWHERE TO START MUSIC ✦ /g, '');
-      document.removeEventListener('click', handleFirstInteraction);
-    }
-  }
+  window.addEventListener('resize', resize);
 
-  window.addEventListener('resize', updateCanvasDimensions);
-  
-  window.addEventListener('mousemove', (event) => {
-    mousePositionX = event.clientX;
-    mousePositionY = event.clientY;
-
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
     if (window.innerWidth > 520) {
-      targetRotationX = (window.innerHeight / 2 - event.clientY) / 180;
-      targetRotationY = (window.innerWidth / 2 - event.clientX) / -180;
+      tRX = (window.innerHeight / 2 - e.clientY) / 180;
+      tRY = (e.clientX - window.innerWidth / 2) / 180;
     }
   });
 
   window.addEventListener('mouseout', () => {
-    mousePositionX = -1000;
-    mousePositionY = -1000;
-    targetRotationX = 0;
-    targetRotationY = 0;
+    mouseX = -1000;
+    mouseY = -1000;
+    tRX = 0;
+    tRY = 0;
   });
 
-  window.addEventListener('blur', () => {
-    if (hasAudioStarted) {
-      backgroundAudio.volume = 0.15;
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  });
+
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  let videosLoaded = false;
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'work' && !videosLoaded) {
+        videosLoaded = true;
+        loadVideos();
+      }
+    });
+  });
+
+  async function loadVideos() {
+    const grid = document.getElementById('workGrid');
+    const empty = document.getElementById('workEmpty');
+    const found = [];
+    let i = 1;
+    while (i <= 30) {
+      try {
+        const res = await fetch('Video' + i + '.mp4', { method: 'HEAD' });
+        if (res.ok) {
+          found.push(i);
+          i++;
+        } else {
+          break;
+        }
+      } catch {
+        break;
+      }
     }
-  });
-
-  window.addEventListener('focus', () => {
-    if (hasAudioStarted) {
-      backgroundAudio.volume = 1.0;
+    if (found.length === 0) {
+      empty.style.display = 'block';
+      return;
     }
-  });
+    found.forEach(n => {
+      const card = buildVideoCard(n);
+      grid.appendChild(card);
+      initVideoTilt(card);
+    });
+  }
 
-  document.addEventListener('click', handleFirstInteraction);
+  function fmtTime(s) {
+    const m = Math.floor(s / 60);
+    return m + ':' + Math.floor(s % 60).toString().padStart(2, '0');
+  }
 
-  initializeSystem();
-  renderLoop();
+  function buildVideoCard(n) {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'video-wrap';
+
+    const video = document.createElement('video');
+    video.src = 'Video' + n + '.mp4';
+    video.preload = 'metadata';
+    video.setAttribute('disablePictureInPicture', '');
+    video.setAttribute('controlslist', 'nofullscreen nodownload noremoteplayback');
+    video.playsInline = true;
+
+    const fadeOv = document.createElement('div');
+    fadeOv.className = 'video-fade-overlay';
+
+    const playOv = document.createElement('div');
+    playOv.className = 'video-play-overlay';
+    const playIcon = document.createElement('div');
+    playIcon.className = 'play-icon';
+    playIcon.innerHTML = '&#9654;';
+    playOv.appendChild(playIcon);
+
+    const controls = document.createElement('div');
+    controls.className = 'video-controls';
+
+    const vcBtn = document.createElement('button');
+    vcBtn.className = 'vc-play-btn';
+    vcBtn.innerHTML = '&#9654;';
+
+    const vcProg = document.createElement('div');
+    vcProg.className = 'vc-progress';
+    const vcBar = document.createElement('div');
+    vcBar.className = 'vc-bar';
+    vcProg.appendChild(vcBar);
+
+    const vcTime = document.createElement('span');
+    vcTime.className = 'vc-time';
+    vcTime.textContent = '0:00';
+
+    controls.appendChild(vcBtn);
+    controls.appendChild(vcProg);
+    controls.appendChild(vcTime);
+
+    wrap.appendChild(video);
+    wrap.appendChild(fadeOv);
+    wrap.appendChild(playOv);
+    wrap.appendChild(controls);
+
+    const label = document.createElement('div');
+    label.className = 'video-label';
+    label.textContent = 'Video ' + n;
+
+    card.appendChild(wrap);
+    card.appendChild(label);
+
+    function togglePlay() {
+      if (video.paused) {
+        video.play().catch(() => {});
+        playOv.classList.add('hidden');
+        vcBtn.innerHTML = '&#9646;&#9646;';
+      } else {
+        video.pause();
+        playOv.classList.remove('hidden');
+        vcBtn.innerHTML = '&#9654;';
+      }
+    }
+
+    playOv.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
+    vcBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
+
+    video.addEventListener('timeupdate', () => {
+      if (video.duration) {
+        vcBar.style.width = (video.currentTime / video.duration * 100) + '%';
+        vcTime.textContent = fmtTime(video.currentTime) + ' / ' + fmtTime(video.duration);
+      }
+    });
+
+    video.addEventListener('loadedmetadata', () => {
+      vcTime.textContent = '0:00 / ' + fmtTime(video.duration);
+    });
+
+    video.addEventListener('ended', () => {
+      playOv.classList.remove('hidden');
+      vcBtn.innerHTML = '&#9654;';
+      vcBar.style.width = '0%';
+      video.currentTime = 0;
+      if (video.duration) vcTime.textContent = '0:00 / ' + fmtTime(video.duration);
+    });
+
+    video.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    vcProg.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const rect = vcProg.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      if (video.duration) video.currentTime = pct * video.duration;
+    });
+
+    return card;
+  }
+
+  function initVideoTilt(card) {
+    card.addEventListener('mouseenter', () => {
+      card.style.transition = 'transform 0.1s ease, box-shadow 0.3s ease';
+    });
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const rx = (r.top + r.height / 2 - e.clientY) / 14;
+      const ry = (e.clientX - r.left - r.width / 2) / 14;
+      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transition = 'transform 0.5s ease, box-shadow 0.3s ease';
+      card.style.transform = '';
+    });
+  }
+
+  init();
+  loop();
+
 })();
 </script>
 </body>
