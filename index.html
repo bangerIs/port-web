@@ -886,6 +886,7 @@ body {
   const MDIST_SQ = MDIST * MDIST;
 
   let tRX = 0, tRY = 0, cRX = 0, cRY = 0;
+  let lbTRX = 0, lbTRY = 0, lbCRX = 0, lbCRY = 0;
 
   const bgAudio = new Audio('bgmusic.mp3');
   bgAudio.loop = true;
@@ -929,8 +930,15 @@ body {
     cRX += (tRX - cRX) * 0.1;
     cRY += (tRY - cRY) * 0.1;
 
-    if (window.innerWidth > 520) {
+    if (window.innerWidth > 520 && !lbOpen) {
       mainCard.style.transform = `rotateX(${cRX}deg) rotateY(${cRY}deg)`;
+    }
+
+    // Lightbox tilt — very slow lerp for ultra-smooth feel
+    if (lbOpen) {
+      lbCRX += (lbTRX - lbCRX) * 0.04;
+      lbCRY += (lbTRY - lbCRY) * 0.04;
+      lbCard.style.transform = `perspective(1400px) rotateX(${lbCRX}deg) rotateY(${lbCRY}deg)`;
     }
 
     for (let i = 0; i < N; i++) {
@@ -1085,33 +1093,33 @@ body {
     lbOpen = true;
     currentThumb = thumbEl;
 
-    // Load video
-    lbVideo.src = 'Video' + n + '.mp4';
-    lbVideo.load();
-    lbTitle.textContent = 'VIDEO ' + n;
+    // Reset state
     lbBar.style.width = '0%';
     lbTime.textContent = '0:00';
     lbPlayBtn.innerHTML = '&#9654;';
+    lbTitle.textContent = 'VIDEO ' + n;
+    lbTRX = 0; lbTRY = 0; lbCRX = 0; lbCRY = 0;
+
+    // Set video src and start buffering immediately
+    lbVideo.preload = 'auto';
+    lbVideo.src = 'Video' + n + '.mp4';
+    lbVideo.load();
 
     // Snapshot thumb position
     const tr = thumbEl.getBoundingClientRect();
 
-    // Place lb-card at thumb — no transition
+    // Place lb-card at thumb position instantly (no transition)
     lbCard.style.transition = 'none';
-    lbCard.style.left   = tr.left + 'px';
-    lbCard.style.top    = tr.top  + 'px';
-    lbCard.style.width  = tr.width + 'px';
+    lbCard.style.transform  = '';
+    lbCard.style.left   = tr.left   + 'px';
+    lbCard.style.top    = tr.top    + 'px';
+    lbCard.style.width  = tr.width  + 'px';
     lbCard.style.height = tr.height + 'px';
     lbCard.style.borderRadius = '8px';
     lbCard.classList.add('visible');
-
-    // Show backdrop
     lbBackdrop.classList.add('active');
 
-    // Disable main card tilt while lightbox is open
-    tRX = 0; tRY = 0;
-
-    // Animate to expanded position
+    // Animate to expanded on next paint
     requestAnimationFrame(() => requestAnimationFrame(() => {
       const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
       lbCard.style.transition = `left 0.44s ${EASE}, top 0.44s ${EASE}, width 0.44s ${EASE}, height 0.44s ${EASE}, border-radius 0.3s ease`;
@@ -1122,8 +1130,11 @@ body {
       lbCard.style.borderRadius = '16px';
     }));
 
-    // Start playing after most of the animation finishes
-    setTimeout(() => lbVideo.play().catch(() => {}), 320);
+    // Play only once the browser says it has enough data — no guessing, no sync issues
+    lbVideo.addEventListener('canplay', function onReady() {
+      lbVideo.removeEventListener('canplay', onReady);
+      if (lbOpen) lbVideo.play().catch(() => {});
+    }, { once: true });
   }
 
   function closeLightbox() {
@@ -1131,12 +1142,16 @@ body {
     lbOpen = false;
     lbVideo.pause();
 
+    // Reset lb tilt immediately
+    lbTRX = 0; lbTRY = 0; lbCRX = 0; lbCRY = 0;
+    lbCard.style.transform = '';
+
     const tr = currentThumb.getBoundingClientRect();
     const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
     lbCard.style.transition = `left 0.38s ${EASE}, top 0.38s ${EASE}, width 0.38s ${EASE}, height 0.38s ${EASE}, border-radius 0.25s ease`;
-    lbCard.style.left   = tr.left + 'px';
-    lbCard.style.top    = tr.top  + 'px';
-    lbCard.style.width  = tr.width + 'px';
+    lbCard.style.left   = tr.left   + 'px';
+    lbCard.style.top    = tr.top    + 'px';
+    lbCard.style.width  = tr.width  + 'px';
     lbCard.style.height = tr.height + 'px';
     lbCard.style.borderRadius = '8px';
 
@@ -1150,18 +1165,20 @@ body {
     }, 400);
   }
 
-  // Lightbox tilt (gentler — divide by 38 vs mainCard's 180)
+  // Lightbox tilt — sets targets only; RAF loop lerps toward them
+  // Normalized by card half-size so edges never spike, clamped to ±2deg
   lbCard.addEventListener('mousemove', (e) => {
     if (!lbOpen) return;
     const r = lbCard.getBoundingClientRect();
-    const rx = (r.top + r.height / 2 - e.clientY) / 38;
-    const ry = (e.clientX - r.left - r.width / 2) / 38;
-    // Apply on top of the position-based transition (use outline transform only)
-    lbCard.style.transform = `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    const nx = (r.top + r.height / 2 - e.clientY) / (r.height / 2);
+    const ny = (e.clientX - r.left - r.width / 2) / (r.width  / 2);
+    lbTRX = Math.max(-2, Math.min(2, nx * 2));
+    lbTRY = Math.max(-2, Math.min(2, ny * 2));
   });
 
   lbCard.addEventListener('mouseleave', () => {
-    lbCard.style.transform = '';
+    lbTRX = 0;
+    lbTRY = 0;
   });
 
   // Lightbox video controls
