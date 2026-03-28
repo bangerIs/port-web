@@ -421,11 +421,12 @@ body {
   padding: 7px 0;
 }
 
+/* ── WORK GRID (thumbnail gallery) ── */
 .work-grid {
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
   max-height: 75vh;
   overflow-y: auto;
   overflow-x: hidden;
@@ -442,129 +443,163 @@ body {
   color: var(--textdim);
   font-size: 1.2rem;
   display: none;
+  grid-column: 1 / -1;
 }
 
-.video-card {
-  background: var(--panel);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-.video-card:hover {
-  box-shadow: 0 8px 30px rgba(28,90,138,0.22);
-}
-
-.video-wrap {
+/* thumbnail card */
+.thumb-card {
   position: relative;
-  width: 100%;
+  aspect-ratio: 16 / 9;
   background: #0a1a2e;
-  cursor: pointer;
+  border-radius: 8px;
   overflow: hidden;
-  /* height is driven by the video element's natural ratio, capped so wide videos don't become flat strips */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.video-wrap video {
-  display: block;
+.thumb-card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 22px rgba(28,90,138,0.35);
+  border-color: var(--accent2);
+}
+
+.thumb-card video {
   width: 100%;
-  height: auto;        /* natural height from actual video ratio */
-  max-height: 65vh;    /* prevents ultra-wide clips from becoming flat strips */
-  object-fit: contain; /* never crops; dark bg fills any leftover space */
+  height: 100%;
+  object-fit: cover;
+  display: block;
   pointer-events: none;
 }
 
-.video-fade-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to right, rgba(240,248,255,0.45) 0%, transparent 18%, transparent 82%, rgba(240,248,255,0.45) 100%),
-    linear-gradient(to bottom, rgba(240,248,255,0.45) 0%, transparent 15%, transparent 85%, rgba(240,248,255,0.45) 100%);
-  pointer-events: none;
-  z-index: 2;
-}
-
-.video-play-overlay {
+.thumb-hover {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 3;
-  transition: opacity 0.3s ease;
-  background: rgba(28,90,138,0.1);
-}
-
-.video-play-overlay.hidden {
+  gap: 4px;
+  background: rgba(8, 24, 50, 0.52);
   opacity: 0;
-  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
 
-.play-icon {
-  width: 58px;
-  height: 58px;
+.thumb-card:hover .thumb-hover { opacity: 1; }
+
+.thumb-play {
+  width: 32px;
+  height: 32px;
   background: rgba(240,248,255,0.92);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent);
-  font-size: 1.3rem;
-  transition: transform 0.2s ease, background 0.2s ease;
-  padding-left: 4px;
+  font-size: 0.85rem;
+  padding-left: 3px;
 }
 
-.video-play-overlay:hover .play-icon {
-  transform: scale(1.12);
-  background: rgba(255,255,255,1);
+.thumb-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: rgba(240,248,255,0.85);
 }
 
-.video-controls {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 22px 12px 10px;
-  background: linear-gradient(transparent, rgba(8,24,50,0.65));
+/* ── LIGHTBOX ── */
+.lb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 15, 30, 0.88);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.38s ease;
+  backdrop-filter: blur(4px);
+}
+
+.lb-backdrop.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.lb-card {
+  position: fixed;
+  z-index: 1000;
+  background: #0a1a2e;
+  border: 1.5px solid rgba(28,90,138,0.5);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  will-change: transform, top, left, width, height;
+}
+
+.lb-card.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.lb-video-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #000;
   display: flex;
   align-items: center;
-  gap: 8px;
-  z-index: 4;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lb-video-area video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+/* lightbox custom controls */
+.lb-controls {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 28px 14px 10px;
+  background: linear-gradient(transparent, rgba(4,14,30,0.8));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 5;
   opacity: 0;
   transition: opacity 0.25s ease;
 }
 
-.video-wrap:hover .video-controls {
-  opacity: 1;
-}
+.lb-video-area:hover .lb-controls { opacity: 1; }
 
-.vc-play-btn {
+.lb-play-btn {
   background: none;
   border: none;
   color: rgba(240,248,255,0.9);
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   cursor: pointer;
-  padding: 2px 5px;
+  padding: 2px 6px;
   font-family: 'VT323', monospace;
   line-height: 1;
   flex-shrink: 0;
 }
 
-.vc-progress {
+.lb-progress {
   flex: 1;
   height: 4px;
   background: rgba(255,255,255,0.22);
   border-radius: 2px;
   cursor: pointer;
-  position: relative;
 }
 
-.vc-bar {
+.lb-bar {
   height: 100%;
   width: 0%;
   background: rgba(240,248,255,0.9);
@@ -572,22 +607,52 @@ body {
   pointer-events: none;
 }
 
-.vc-time {
+.lb-time {
   font-family: 'VT323', monospace;
-  font-size: 0.92rem;
-  color: rgba(240,248,255,0.8);
+  font-size: 1rem;
+  color: rgba(240,248,255,0.75);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.video-label {
+/* lightbox footer bar */
+.lb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  background: rgba(12,28,55,0.95);
+  border-top: 1px solid rgba(28,90,138,0.3);
+  flex-shrink: 0;
+}
+
+.lb-title {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--accent2);
+}
+
+.lb-close {
+  background: none;
+  border: none;
+  color: rgba(200,225,255,0.6);
+  font-size: 1.05rem;
+  font-family: 'VT323', monospace;
+  cursor: pointer;
   letter-spacing: 0.08em;
-  color: var(--accent);
-  padding: 8px 14px;
-  background: var(--panel2);
-  border-top: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.lb-close:hover {
+  color: rgba(240,248,255,1);
+  background: rgba(28,90,138,0.3);
+}
+
+@media (max-width: 520px) {
+  .work-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @keyframes fadeUp {
@@ -783,6 +848,25 @@ body {
   </div>
 </div>
 
+<!-- LIGHTBOX -->
+<div class="lb-backdrop" id="lbBackdrop"></div>
+<div class="lb-card" id="lbCard">
+  <div class="lb-video-area" id="lbVideoArea">
+    <video id="lbVideo" preload="auto" playsinline
+      disablePictureInPicture
+      controlslist="nofullscreen nodownload noremoteplayback"></video>
+    <div class="lb-controls" id="lbControls">
+      <button class="lb-play-btn" id="lbPlayBtn">&#9654;</button>
+      <div class="lb-progress" id="lbProgress"><div class="lb-bar" id="lbBar"></div></div>
+      <span class="lb-time" id="lbTime">0:00</span>
+    </div>
+  </div>
+  <div class="lb-footer">
+    <span class="lb-title" id="lbTitle">VIDEO 1</span>
+    <button class="lb-close" id="lbCloseBtn">[ CLOSE ]</button>
+  </div>
+</div>
+
 <script>
 (function () {
 
@@ -946,25 +1030,11 @@ body {
     while (i <= 30) {
       try {
         const res = await fetch('Video' + i + '.mp4', { method: 'HEAD' });
-        if (res.ok) {
-          found.push(i);
-          i++;
-        } else {
-          break;
-        }
-      } catch {
-        break;
-      }
+        if (res.ok) { found.push(i); i++; } else break;
+      } catch { break; }
     }
-    if (found.length === 0) {
-      empty.style.display = 'block';
-      return;
-    }
-    found.forEach(n => {
-      const card = buildVideoCard(n);
-      grid.appendChild(card);
-      initVideoTilt(card);
-    });
+    if (found.length === 0) { empty.style.display = 'block'; return; }
+    found.forEach(n => grid.appendChild(buildThumbCard(n)));
   }
 
   function fmtTime(s) {
@@ -972,124 +1042,173 @@ body {
     return m + ':' + Math.floor(s % 60).toString().padStart(2, '0');
   }
 
-  function buildVideoCard(n) {
+  function buildThumbCard(n) {
     const card = document.createElement('div');
-    card.className = 'video-card';
+    card.className = 'thumb-card';
 
-    const wrap = document.createElement('div');
-    wrap.className = 'video-wrap';
+    const vid = document.createElement('video');
+    vid.src = 'Video' + n + '.mp4';
+    vid.preload = 'metadata';
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.addEventListener('loadedmetadata', () => { vid.currentTime = 0.1; });
+    vid.addEventListener('contextmenu', e => e.preventDefault());
 
-    const video = document.createElement('video');
-    video.src = 'Video' + n + '.mp4';
-    video.preload = 'metadata';
-    video.setAttribute('disablePictureInPicture', '');
-    video.setAttribute('controlslist', 'nofullscreen nodownload noremoteplayback');
-    video.playsInline = true;
+    const hover = document.createElement('div');
+    hover.className = 'thumb-hover';
+    hover.innerHTML = `<div class="thumb-play">&#9654;</div><div class="thumb-label">VIDEO ${n}</div>`;
 
-    const fadeOv = document.createElement('div');
-    fadeOv.className = 'video-fade-overlay';
-
-    const playOv = document.createElement('div');
-    playOv.className = 'video-play-overlay';
-    const playIcon = document.createElement('div');
-    playIcon.className = 'play-icon';
-    playIcon.innerHTML = '&#9654;';
-    playOv.appendChild(playIcon);
-
-    const controls = document.createElement('div');
-    controls.className = 'video-controls';
-
-    const vcBtn = document.createElement('button');
-    vcBtn.className = 'vc-play-btn';
-    vcBtn.innerHTML = '&#9654;';
-
-    const vcProg = document.createElement('div');
-    vcProg.className = 'vc-progress';
-    const vcBar = document.createElement('div');
-    vcBar.className = 'vc-bar';
-    vcProg.appendChild(vcBar);
-
-    const vcTime = document.createElement('span');
-    vcTime.className = 'vc-time';
-    vcTime.textContent = '0:00';
-
-    controls.appendChild(vcBtn);
-    controls.appendChild(vcProg);
-    controls.appendChild(vcTime);
-
-    wrap.appendChild(video);
-    wrap.appendChild(fadeOv);
-    wrap.appendChild(playOv);
-    wrap.appendChild(controls);
-
-    const label = document.createElement('div');
-    label.className = 'video-label';
-    label.textContent = 'Video ' + n;
-
-    card.appendChild(wrap);
-    card.appendChild(label);
-
-    function togglePlay() {
-      if (video.paused) {
-        video.play().catch(() => {});
-        playOv.classList.add('hidden');
-        vcBtn.innerHTML = '&#9646;&#9646;';
-      } else {
-        video.pause();
-        playOv.classList.remove('hidden');
-        vcBtn.innerHTML = '&#9654;';
-      }
-    }
-
-    playOv.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
-    vcBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
-
-    video.addEventListener('timeupdate', () => {
-      if (video.duration) {
-        vcBar.style.width = (video.currentTime / video.duration * 100) + '%';
-        vcTime.textContent = fmtTime(video.currentTime) + ' / ' + fmtTime(video.duration);
-      }
-    });
-
-    video.addEventListener('loadedmetadata', () => {
-      vcTime.textContent = '0:00 / ' + fmtTime(video.duration);
-    });
-
-    video.addEventListener('ended', () => {
-      playOv.classList.remove('hidden');
-      vcBtn.innerHTML = '&#9654;';
-      vcBar.style.width = '0%';
-      video.currentTime = 0;
-      if (video.duration) vcTime.textContent = '0:00 / ' + fmtTime(video.duration);
-    });
-
-    video.addEventListener('contextmenu', (e) => e.preventDefault());
-
-    vcProg.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const rect = vcProg.getBoundingClientRect();
-      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      if (video.duration) video.currentTime = pct * video.duration;
-    });
-
+    card.appendChild(vid);
+    card.appendChild(hover);
+    card.addEventListener('click', () => openLightbox(n, card));
     return card;
   }
 
-  function initVideoTilt(card) {
-    card.addEventListener('mouseenter', () => {
-      card.style.transition = 'transform 0.1s ease, box-shadow 0.3s ease';
-    });
-    card.addEventListener('mousemove', (e) => {
-      const r = card.getBoundingClientRect();
-      const rx = (r.top + r.height / 2 - e.clientY) / 14;
-      const ry = (e.clientX - r.left - r.width / 2) / 14;
-      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-    });
-    card.addEventListener('mouseleave', () => {
-      card.style.transition = 'transform 0.5s ease, box-shadow 0.3s ease';
-      card.style.transform = '';
-    });
+  // ── LIGHTBOX ──
+  const lbBackdrop  = document.getElementById('lbBackdrop');
+  const lbCard      = document.getElementById('lbCard');
+  const lbVideoArea = document.getElementById('lbVideoArea');
+  const lbVideo     = document.getElementById('lbVideo');
+  const lbPlayBtn   = document.getElementById('lbPlayBtn');
+  const lbProgress  = document.getElementById('lbProgress');
+  const lbBar       = document.getElementById('lbBar');
+  const lbTime      = document.getElementById('lbTime');
+  const lbTitle     = document.getElementById('lbTitle');
+  const lbCloseBtn  = document.getElementById('lbCloseBtn');
+
+  let currentThumb = null;
+  let lbOpen = false;
+  const PAD = 36; // px margin from screen edges
+
+  function openLightbox(n, thumbEl) {
+    if (lbOpen) return;
+    lbOpen = true;
+    currentThumb = thumbEl;
+
+    // Load video
+    lbVideo.src = 'Video' + n + '.mp4';
+    lbVideo.load();
+    lbTitle.textContent = 'VIDEO ' + n;
+    lbBar.style.width = '0%';
+    lbTime.textContent = '0:00';
+    lbPlayBtn.innerHTML = '&#9654;';
+
+    // Snapshot thumb position
+    const tr = thumbEl.getBoundingClientRect();
+
+    // Place lb-card at thumb — no transition
+    lbCard.style.transition = 'none';
+    lbCard.style.left   = tr.left + 'px';
+    lbCard.style.top    = tr.top  + 'px';
+    lbCard.style.width  = tr.width + 'px';
+    lbCard.style.height = tr.height + 'px';
+    lbCard.style.borderRadius = '8px';
+    lbCard.classList.add('visible');
+
+    // Show backdrop
+    lbBackdrop.classList.add('active');
+
+    // Disable main card tilt while lightbox is open
+    tRX = 0; tRY = 0;
+
+    // Animate to expanded position
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+      lbCard.style.transition = `left 0.44s ${EASE}, top 0.44s ${EASE}, width 0.44s ${EASE}, height 0.44s ${EASE}, border-radius 0.3s ease`;
+      lbCard.style.left   = PAD + 'px';
+      lbCard.style.top    = PAD + 'px';
+      lbCard.style.width  = (window.innerWidth  - PAD * 2) + 'px';
+      lbCard.style.height = (window.innerHeight - PAD * 2) + 'px';
+      lbCard.style.borderRadius = '16px';
+    }));
+
+    // Start playing after most of the animation finishes
+    setTimeout(() => lbVideo.play().catch(() => {}), 320);
   }
+
+  function closeLightbox() {
+    if (!lbOpen || !currentThumb) return;
+    lbOpen = false;
+    lbVideo.pause();
+
+    const tr = currentThumb.getBoundingClientRect();
+    const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+    lbCard.style.transition = `left 0.38s ${EASE}, top 0.38s ${EASE}, width 0.38s ${EASE}, height 0.38s ${EASE}, border-radius 0.25s ease`;
+    lbCard.style.left   = tr.left + 'px';
+    lbCard.style.top    = tr.top  + 'px';
+    lbCard.style.width  = tr.width + 'px';
+    lbCard.style.height = tr.height + 'px';
+    lbCard.style.borderRadius = '8px';
+
+    lbBackdrop.classList.remove('active');
+
+    setTimeout(() => {
+      lbCard.classList.remove('visible');
+      lbCard.style.transition = 'none';
+      lbVideo.src = '';
+      currentThumb = null;
+    }, 400);
+  }
+
+  // Lightbox tilt (gentler — divide by 38 vs mainCard's 180)
+  lbCard.addEventListener('mousemove', (e) => {
+    if (!lbOpen) return;
+    const r = lbCard.getBoundingClientRect();
+    const rx = (r.top + r.height / 2 - e.clientY) / 38;
+    const ry = (e.clientX - r.left - r.width / 2) / 38;
+    // Apply on top of the position-based transition (use outline transform only)
+    lbCard.style.transform = `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
+
+  lbCard.addEventListener('mouseleave', () => {
+    lbCard.style.transform = '';
+  });
+
+  // Lightbox video controls
+  function lbTogglePlay() {
+    if (lbVideo.paused) {
+      lbVideo.play().catch(() => {});
+      lbPlayBtn.innerHTML = '&#9646;&#9646;';
+    } else {
+      lbVideo.pause();
+      lbPlayBtn.innerHTML = '&#9654;';
+    }
+  }
+
+  lbPlayBtn.addEventListener('click', e => { e.stopPropagation(); lbTogglePlay(); });
+  lbVideoArea.addEventListener('click', e => { if (e.target === lbVideo || e.target === lbVideoArea) lbTogglePlay(); });
+
+  lbVideo.addEventListener('timeupdate', () => {
+    if (lbVideo.duration) {
+      lbBar.style.width = (lbVideo.currentTime / lbVideo.duration * 100) + '%';
+      lbTime.textContent = fmtTime(lbVideo.currentTime) + ' / ' + fmtTime(lbVideo.duration);
+    }
+  });
+
+  lbVideo.addEventListener('loadedmetadata', () => {
+    if (lbVideo.duration) lbTime.textContent = '0:00 / ' + fmtTime(lbVideo.duration);
+  });
+
+  lbVideo.addEventListener('ended', () => {
+    lbPlayBtn.innerHTML = '&#9654;';
+    lbBar.style.width = '0%';
+    lbVideo.currentTime = 0;
+  });
+
+  lbVideo.addEventListener('play',  () => { lbPlayBtn.innerHTML = '&#9646;&#9646;'; });
+  lbVideo.addEventListener('pause', () => { lbPlayBtn.innerHTML = '&#9654;'; });
+  lbVideo.addEventListener('contextmenu', e => e.preventDefault());
+
+  lbProgress.addEventListener('click', e => {
+    e.stopPropagation();
+    const rect = lbProgress.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    if (lbVideo.duration) lbVideo.currentTime = pct * lbVideo.duration;
+  });
+
+  lbCloseBtn.addEventListener('click', e => { e.stopPropagation(); closeLightbox(); });
+  lbBackdrop.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && lbOpen) closeLightbox(); });
 
   init();
   loop();
