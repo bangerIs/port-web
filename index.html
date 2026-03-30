@@ -43,6 +43,7 @@ body {
   font-family: 'VT323', monospace;
   min-height: 100vh;
   overflow-x: hidden;
+  cursor: crosshair;
 }
 
 #particlesCanvas {
@@ -383,6 +384,7 @@ body {
   padding: 4px 8px;
   border-radius: 4px;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .prow:hover {
@@ -421,7 +423,6 @@ body {
   padding: 7px 0;
 }
 
-/* ── WORK GRID (thumbnail gallery) ── */
 .work-grid {
   padding: 14px;
   display: grid;
@@ -446,7 +447,6 @@ body {
   grid-column: 1 / -1;
 }
 
-/* thumbnail card */
 .thumb-card {
   position: relative;
   aspect-ratio: 16 / 9;
@@ -470,6 +470,12 @@ body {
   object-fit: cover;
   display: block;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.thumb-card video.loaded {
+  opacity: 1;
 }
 
 .thumb-hover {
@@ -507,7 +513,6 @@ body {
   color: rgba(240,248,255,0.85);
 }
 
-/* ── LIGHTBOX ── */
 .lb-backdrop {
   position: fixed;
   inset: 0;
@@ -563,7 +568,6 @@ body {
   pointer-events: none;
 }
 
-/* lightbox custom controls */
 .lb-controls {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -615,7 +619,6 @@ body {
   flex-shrink: 0;
 }
 
-/* lightbox footer bar */
 .lb-footer {
   display: flex;
   align-items: center;
@@ -848,7 +851,6 @@ body {
   </div>
 </div>
 
-<!-- LIGHTBOX -->
 <div class="lb-backdrop" id="lbBackdrop"></div>
 <div class="lb-card" id="lbCard">
   <div class="lb-video-area" id="lbVideoArea">
@@ -887,6 +889,8 @@ body {
 
   let tRX = 0, tRY = 0, cRX = 0, cRY = 0;
   let lbTRX = 0, lbTRY = 0, lbCRX = 0, lbCRY = 0;
+
+  let ShockWaves = [];
 
   const bgAudio = new Audio('bgmusic.mp3');
   bgAudio.loop = true;
@@ -934,20 +938,54 @@ body {
       mainCard.style.transform = `rotateX(${cRX}deg) rotateY(${cRY}deg)`;
     }
 
-    // Lightbox tilt — very slow lerp for ultra-smooth feel
     if (lbOpen) {
       lbCRX += (lbTRX - lbCRX) * 0.04;
       lbCRY += (lbTRY - lbCRY) * 0.04;
       lbCard.style.transform = `perspective(1400px) rotateX(${lbCRX}deg) rotateY(${lbCRY}deg)`;
     }
 
+    for (let i = ShockWaves.length - 1; i >= 0; i--) {
+      let w = ShockWaves[i];
+      w.r += 12;
+      w.alpha -= 0.02;
+      
+      if (w.alpha <= 0) {
+        ShockWaves.splice(i, 1);
+        continue;
+      }
+
+      ctx.beginPath();
+      ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(28,90,138,${w.alpha * 0.8})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      for (let j = 0; j < N; j++) {
+        let p = particles[j];
+        let dx = p.x - w.x;
+        let dy = p.y - w.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (Math.abs(dist - w.r) < 15) {
+          p.vx += (dx / dist) * 0.8;
+          p.vy += (dy / dist) * 0.8;
+        }
+      }
+    }
+
     for (let i = 0; i < N; i++) {
       const p = particles[i];
 
+      p.vx *= 0.98;
+      p.vy *= 0.98;
+
+      const baseVx = (p.vx > 0 ? 1 : -1) * Math.max(Math.abs(p.vx), Math.abs((Math.random() - 0.5) * SPEED));
+      const baseVy = (p.vy > 0 ? 1 : -1) * Math.max(Math.abs(p.vy), Math.abs((Math.random() - 0.5) * SPEED));
+      
+      p.x += baseVx;
+      p.y += baseVy;
+
       if (p.x < 0 || p.x > W) p.vx *= -1;
       if (p.y < 0 || p.y > H) p.vy *= -1;
-      p.x += p.vx;
-      p.y += p.vy;
 
       const dmx = p.x - mouseX;
       const dmy = p.y - mouseY;
@@ -1009,6 +1047,10 @@ body {
     tRY = 0;
   });
 
+  window.addEventListener('click', (e) => {
+    ShockWaves.push({ x: e.clientX, y: e.clientY, r: 0, alpha: 1 });
+  });
+
   document.addEventListener('fullscreenchange', () => {
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   });
@@ -1029,6 +1071,24 @@ body {
       }
     });
   });
+
+  const VideoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const vid = entry.target;
+      if (entry.isIntersecting) {
+        if (!vid.src) {
+          vid.src = vid.dataset.src;
+          vid.load();
+        }
+      } else {
+        if (vid.src) {
+          vid.removeAttribute('src');
+          vid.load();
+          vid.classList.remove('loaded');
+        }
+      }
+    });
+  }, { rootMargin: '200px' });
 
   async function loadVideos() {
     const grid = document.getElementById('workGrid');
@@ -1055,11 +1115,15 @@ body {
     card.className = 'thumb-card';
 
     const vid = document.createElement('video');
-    vid.src = 'Video' + n + '.mp4';
-    vid.preload = 'metadata';
+    vid.dataset.src = 'Video' + n + '.mp4';
+    vid.preload = 'none';
     vid.muted = true;
     vid.playsInline = true;
-    vid.addEventListener('loadedmetadata', () => { vid.currentTime = 0.1; });
+    
+    vid.addEventListener('loadedmetadata', () => { 
+      vid.currentTime = 0.1; 
+      vid.classList.add('loaded');
+    });
     vid.addEventListener('contextmenu', e => e.preventDefault());
 
     const hover = document.createElement('div');
@@ -1069,10 +1133,12 @@ body {
     card.appendChild(vid);
     card.appendChild(hover);
     card.addEventListener('click', () => openLightbox(n, card));
+    
+    VideoObserver.observe(vid);
+    
     return card;
   }
 
-  // ── LIGHTBOX ──
   const lbBackdrop  = document.getElementById('lbBackdrop');
   const lbCard      = document.getElementById('lbCard');
   const lbVideoArea = document.getElementById('lbVideoArea');
@@ -1086,29 +1152,25 @@ body {
 
   let currentThumb = null;
   let lbOpen = false;
-  const PAD = 36; // px margin from screen edges
+  const PAD = 36;
 
   function openLightbox(n, thumbEl) {
     if (lbOpen) return;
     lbOpen = true;
     currentThumb = thumbEl;
 
-    // Reset state
     lbBar.style.width = '0%';
     lbTime.textContent = '0:00';
     lbPlayBtn.innerHTML = '&#9654;';
     lbTitle.textContent = 'VIDEO ' + n;
     lbTRX = 0; lbTRY = 0; lbCRX = 0; lbCRY = 0;
 
-    // Set video src and start buffering immediately
     lbVideo.preload = 'auto';
     lbVideo.src = 'Video' + n + '.mp4';
     lbVideo.load();
 
-    // Snapshot thumb position
     const tr = thumbEl.getBoundingClientRect();
 
-    // Place lb-card at thumb position instantly (no transition)
     lbCard.style.transition = 'none';
     lbCard.style.transform  = '';
     lbCard.style.left   = tr.left   + 'px';
@@ -1119,7 +1181,6 @@ body {
     lbCard.classList.add('visible');
     lbBackdrop.classList.add('active');
 
-    // Animate to expanded on next paint
     requestAnimationFrame(() => requestAnimationFrame(() => {
       const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
       lbCard.style.transition = `left 0.44s ${EASE}, top 0.44s ${EASE}, width 0.44s ${EASE}, height 0.44s ${EASE}, border-radius 0.3s ease`;
@@ -1130,7 +1191,6 @@ body {
       lbCard.style.borderRadius = '16px';
     }));
 
-    // Play only once the browser says it has enough data — no guessing, no sync issues
     lbVideo.addEventListener('canplay', function onReady() {
       lbVideo.removeEventListener('canplay', onReady);
       if (lbOpen) lbVideo.play().catch(() => {});
@@ -1142,7 +1202,6 @@ body {
     lbOpen = false;
     lbVideo.pause();
 
-    // Reset lb tilt immediately
     lbTRX = 0; lbTRY = 0; lbCRX = 0; lbCRY = 0;
     lbCard.style.transform = '';
 
@@ -1165,8 +1224,6 @@ body {
     }, 400);
   }
 
-  // Lightbox tilt — sets targets only; RAF loop lerps toward them
-  // Normalized by card half-size so edges never spike, clamped to ±2deg
   lbCard.addEventListener('mousemove', (e) => {
     if (!lbOpen) return;
     const r = lbCard.getBoundingClientRect();
@@ -1181,7 +1238,6 @@ body {
     lbTRY = 0;
   });
 
-  // Lightbox video controls
   function lbTogglePlay() {
     if (lbVideo.paused) {
       lbVideo.play().catch(() => {});
