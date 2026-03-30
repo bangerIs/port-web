@@ -975,17 +975,30 @@ body {
     for (let i = 0; i < N; i++) {
       const p = particles[i];
 
-      p.vx *= 0.98;
-      p.vy *= 0.98;
+      p.vx *= 0.99;
+      p.vy *= 0.99;
 
-      const baseVx = (p.vx > 0 ? 1 : -1) * Math.max(Math.abs(p.vx), Math.abs((Math.random() - 0.5) * SPEED));
-      const baseVy = (p.vy > 0 ? 1 : -1) * Math.max(Math.abs(p.vy), Math.abs((Math.random() - 0.5) * SPEED));
-      
-      p.x += baseVx;
-      p.y += baseVy;
+      if (Math.abs(p.vx) < SPEED) p.vx += p.vx > 0 ? 0.02 : -0.02;
+      if (Math.abs(p.vy) < SPEED) p.vy += p.vy > 0 ? 0.02 : -0.02;
 
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x <= 2) {
+        p.x = 2;
+        p.vx = Math.abs(p.vx);
+      } else if (p.x >= W - 2) {
+        p.x = W - 2;
+        p.vx = -Math.abs(p.vx);
+      }
+
+      if (p.y <= 2) {
+        p.y = 2;
+        p.vy = Math.abs(p.vy);
+      } else if (p.y >= H - 2) {
+        p.y = H - 2;
+        p.vy = -Math.abs(p.vy);
+      }
 
       const dmx = p.x - mouseX;
       const dmy = p.y - mouseY;
